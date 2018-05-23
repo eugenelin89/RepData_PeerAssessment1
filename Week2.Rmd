@@ -1,0 +1,29 @@
+---
+title: "Peer-graded Assignment: Course Project 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading and preprocessing the data
+```{r loading, echo=TRUE}
+df <- read.csv("activity.csv")
+```
+
+## What is mean total number of steps taken per day?
+```{r mean, echo=TRUE}
+#df$date <- as.Date(as.character(df$date))
+# 1. Total number of steps taken per day
+steps_by_date <- tapply(df$steps, df$date, FUN=sum, na.rm = T)
+# 2. Make a histogram of the total number of steps taken each day
+hist(steps_by_date, main="Steps Taken Per Day", xlab="Steps")
+# 3. Calculate and report the mean and median of the total number of steps taken per day
+mean_steps <- mean(steps_by_date)
+medium_steps <- median(steps_by_date)
+```
+Mean of the total number of steps taken per day: `r mean_steps`  
+Medium of the total number of steps taken per day: `r medium_steps`  
+
+
