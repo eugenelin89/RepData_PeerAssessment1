@@ -16,14 +16,42 @@ df <- read.csv("activity.csv")
 ```{r mean, echo=TRUE}
 #df$date <- as.Date(as.character(df$date))
 # 1. Total number of steps taken per day
-steps_by_date <- tapply(df$steps, df$date, FUN=sum, na.rm = T)
+#steps_by_date <- tapply(df$steps, df$date, FUN=sum, na.rm = T)
+steps_by_date <- aggregate(steps ~ date, data = df, sum, na.rm = T)
+
 # 2. Make a histogram of the total number of steps taken each day
-hist(steps_by_date, main="Steps Taken Per Day", xlab="Steps")
+hist(steps_by_date$steps, main="Steps Taken Per Day", xlab="Steps")
+
 # 3. Calculate and report the mean and median of the total number of steps taken per day
-mean_steps <- mean(steps_by_date)
-medium_steps <- median(steps_by_date)
+mean_steps <- mean(steps_by_date$steps)
+medium_steps <- median(steps_by_date$steps)
 ```
-Mean of the total number of steps taken per day: `r mean_steps`  
+Mean of the total number of steps taken per day: `r format(mean_steps, scientific=FALSE)`  
 Medium of the total number of steps taken per day: `r medium_steps`  
 
+Note that on certain days steps are all NAs and by using aggregate as above those dates are not included. If using a different method, it may report 0 steps for those dates which would make the histogram look different.
 
+## What is the average daily activity pattern?
+```{r avg_daily_activity, echo=TRUE}
+# 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+interval_avg <- tapply(df$steps, df$interval, mean, na.rm = TRUE)
+plot(interval_avg, type="l", main="Avg Number of Steps Taken in 5-minute Interval", xlab="5-minute Interval", ylab="Avg Steps Taken")
+
+# 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+interval_name <- names(which.max(interval_avg))
+```
+Interval `r interval_name` on average across all the days in the dataset contains the maximum number of steps.
+
+## Imputing missing values
+```{r impute, echo=TRUE}
+# 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+total_nas <- sum(is.na(df$steps))
+print(paste("Total number of missing values in the dataset: ", total_nas))
+
+# 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+
+# 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
+# 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+```
