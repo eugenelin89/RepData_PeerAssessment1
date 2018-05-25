@@ -24,10 +24,10 @@ hist(steps_by_date$steps, main="Steps Taken Per Day", xlab="Steps")
 
 # 3. Calculate and report the mean and median of the total number of steps taken per day
 mean_steps <- mean(steps_by_date$steps)
-medium_steps <- median(steps_by_date$steps)
+median_steps <- median(steps_by_date$steps)
 ```
 Mean of the total number of steps taken per day: `r format(mean_steps, scientific=FALSE)`  
-Medium of the total number of steps taken per day: `r medium_steps`  
+Median of the total number of steps taken per day: `r median_steps`  
 
 Note that on certain days steps are all NAs and by using aggregate as above those dates are not included. If using a different method, it may report 0 steps for those dates which would make the histogram look different.
 
@@ -49,9 +49,36 @@ total_nas <- sum(is.na(df$steps))
 print(paste("Total number of missing values in the dataset: ", total_nas))
 
 # 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+na_pos <- which(is.na(df$steps)) # index of the NAs
+filled_steps <- interval_avg[as.character(df[na_pos, "interval"])]
+print("Replacing NA values with mean of that 5-minute interval.")
 
 # 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
+new_df <- df # new_df is the new dataframe.
+new_df[na_pos,"steps"] <- filled_steps # Replace NA in new_df with interval average.
+print("New dataset with missing data filled.")
 
 # 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+new_steps_by_date <- aggregate(steps ~ date, data = new_df, sum, na.rm = T)
+hist(new_steps_by_date$steps, main="Steps Taken Per Day", xlab="Steps")
+new_mean_steps <- mean(new_steps_by_date$steps)
+new_median_steps <- median(new_steps_by_date$steps)
+```
+Mean of the total number of steps taken per day with missing value filled: `r format(new_mean_steps, scientific=FALSE)`  
+Median of the total number of steps taken per day with missing value filled: `r format(new_median_steps, scientific=FALSE)`  
+After filling in missing values, MEAN remains the same but MEDIAN has changed.
+There appears to be minimal impact of imputing missing data.
+
+## Are there differences in activity patterns between weekdays and weekends?
+```{r weekend, echo=TRUE}
+# 1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+library(lubridate)
+is_weekend <- wday(as.Date(as.character(new_df$date))) %in% c(1,7) # index for weekends
+new_df[is_weekend,"day_level"] <- "weekend"
+new_df[!is_weekend,"day_level"] <- "weekday"
+new_df$day_level <- factor(new_df$day_level)
+str(new_df)
+head(new_df)
+
 
 ```
